@@ -98,13 +98,15 @@ void Equation::SolveUsingUMFPACK(){
     double *null = (double *) NULL ;
     void *Symbolic ;
     void *Numeric ;
-    LOG_DURATION("UMFPACK_factorize"){
+    {
+        LOG_DURATION("UMFPACK_factorize");
         (void) umfpack_di_symbolic (A._n, A._n, A._IA, A._JA, null, &Symbolic, null, null) ;
         int err = umfpack_di_numeric (A._IA, A._JA, A._IJA, Symbolic, &Numeric, null, null) ;
         cout << "UMFPACK_factorize_report " << err << endl;
     }
     umfpack_di_free_symbolic(&Symbolic) ;
-    LOG_DURATION("UMFPACK_solve"){
+    {
+        LOG_DURATION("UMFPACK_solve");
         int err =  umfpack_di_solve (UMFPACK_A, A._IA, A._JA, A._IJA, solution._vect, right._vect, Numeric, null, null) ;
         cout << "UMFPACK_solve_report " << err << endl;
     }
@@ -119,7 +121,8 @@ void Equation::SolveUsingSPARSKITaniILU(int k){
     int ierr = 0;
     double* rW = new double[iwk];
     int* iW = new int[iwk];
-    LOG_DURATION("SPARSKIT_precond"){
+    {
+        LOG_DURATION("SPARSKIT_precond");
         iluk_(&A._n, A._IJA, A._JA, A._IA, &lfil, rW, iW + A._n + 1, iW, levs, &iwk, w, jw, &ierr);
     }
     cout << "SPARSKIT_precond_report " << ierr << endl;
@@ -143,7 +146,8 @@ void Equation::SolveUsingSPARSKITaniILU(int k){
 
     void(*prev)(int*, int*, double*, double*, int*, double*) = prevec0_;
     void(*matv)(int*, double*, double*, double*, double*, int*, int*, double*) = matvec_;
-    LOG_DURATION("Ani2D_solve"){
+   {
+        LOG_DURATION("Ani2D_solve");
         slpbcgs_(prev, &IPREVEC, iW, rW, matv, &IMATVEC, A._IA, A._JA, A._IJA, 
         WORK, &MW, &NW, &n, right._vect, solution._vect, &ITER, &RESID, &INFO, &NUNIT);
     }
